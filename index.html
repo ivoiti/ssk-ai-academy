@@ -203,16 +203,19 @@
   /* phone */
   .phone-stage{display:grid;place-items:center}
   .phone{
-    width:312px;background:#0e0e12;border-radius:42px;padding:11px;
+    width:300px;background:#0e0e12;border-radius:44px;padding:11px;
     box-shadow:0 40px 80px -28px rgba(0,0,0,.6);position:relative
   }
-  .notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:120px;height:26px;background:#0e0e12;border-radius:0 0 16px 16px;z-index:5}
-  .screen{background:#f6f3fc;border-radius:32px;overflow:hidden;position:relative}
-  .tg-bar{background:#fff;padding:18px 16px 12px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line)}
+  .notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:116px;height:26px;background:#0e0e12;border-radius:0 0 16px 16px;z-index:5}
+  .screen{background:#f6f3fc;border-radius:34px;overflow:hidden;position:relative;height:600px;display:flex;flex-direction:column}
+  .tg-bar{flex:none;background:#fff;padding:30px 16px 12px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line)}
   .tg-bar .av{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--violet),var(--violet-2));display:grid;place-items:center;color:#fff;font-weight:800}
   .tg-bar .tt{font-weight:800;font-size:15px;line-height:1.1}
   .tg-bar .st{font-size:11px;color:var(--lime);font-weight:700}
-  .app-body{padding:22px 18px 24px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .app-body{flex:1;overflow-y:auto;padding:22px 18px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;scrollbar-width:thin;scrollbar-color:#d4c6f0 transparent}
+  .app-body::-webkit-scrollbar{width:6px}
+  .app-body::-webkit-scrollbar-thumb{background:#d4c6f0;border-radius:6px}
+  .scroll-hint{margin-top:6px;font-size:11px;color:var(--muted);font-weight:600;animation:bob 2.4s ease-in-out infinite}
   .app-body .km{width:124px;margin:4px auto 2px;filter:drop-shadow(0 14px 16px rgba(90,27,168,.3));animation:bob 4s ease-in-out infinite}
   .hi{background:#fff;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:11px 14px;font-size:13px;font-weight:600;color:var(--graphite);box-shadow:var(--shadow-sm);margin-bottom:16px}
   .app-body h3{font-size:18px;margin-bottom:6px}
@@ -221,6 +224,7 @@
   .stat-row .s{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 6px}
   .stat-row .s b{display:block;font-size:16px;color:var(--violet)}
   .stat-row .s span{font-size:10px;color:var(--muted)}
+  .chip-label{width:100%;text-align:left;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--violet);margin:14px 0 8px}
   .mod-chip{width:100%;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;text-align:left}
   .mod-chip .n{width:24px;height:24px;border-radius:7px;background:#f3eeff;color:var(--violet);font-weight:800;font-size:12px;display:grid;place-items:center;flex:none}
   .mod-chip span{font-size:12.5px;font-weight:600}
@@ -302,9 +306,9 @@
   <div class="blob b1"></div><div class="blob b2"></div>
   <div class="wrap hero-grid">
     <div class="reveal in">
-      <span class="eyebrow"><span class="dot"></span> Кейс · AI-обучение для риелторов-партнёров</span>
+      <span class="eyebrow"><span class="dot"></span> Кейс · AI-обучение для агентов-партнёров</span>
       <h1>AI-Академия <span class="grad">партнёра&nbsp;ССК</span></h1>
-      <p class="lead">Учим риелторов продавать с помощью искусственного интеллекта — на реальных объектах ССК. 5 минут в день, и партнёр продаёт быстрее, увереннее и чаще выбирает именно ССК.</p>
+      <p class="lead">Учим агентов продавать с помощью искусственного интеллекта — на реальных объектах ССК. 5 минут в день, и партнёр продаёт быстрее, увереннее и чаще выбирает именно ССК.</p>
       <div class="hero-cta">
         <a href="#showcase" class="btn btn-primary">Смотреть витрину 🚀</a>
         <a href="#modules" class="btn btn-ghost">Структура программы</a>
@@ -325,13 +329,13 @@
     <div class="sec-head reveal">
       <div class="kicker">Зачем это компании</div>
       <h2>Проблема и цель</h2>
-      <p>Партнёр-риелтор продаёт объекты многих застройщиков сразу — его лояльность распылена. Мы превращаем обучение в инструмент удержания.</p>
+      <p>Агент-партнёр продаёт объекты многих застройщиков сразу — его лояльность распылена. Мы превращаем обучение в инструмент удержания.</p>
     </div>
     <div class="duo">
       <div class="pcard reveal">
         <span class="tag red">Проблема</span>
         <h3>Лояльность партнёра распылена</h3>
-        <p>Риелтор ведёт клиента к тому застройщику, с кем привычнее и выгоднее. Доля сделок по ССК зависит от случая, а не от отношений.</p>
+        <p>Агент ведёт клиента к тому застройщику, с кем привычнее и выгоднее. Доля сделок по ССК зависит от случая, а не от отношений.</p>
       </div>
       <div class="pcard reveal">
         <span class="tag green">Цель</span>
@@ -363,7 +367,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="kicker">Целевая аудитория</div>
-      <h2>Внешние риелторы-партнёры</h2>
+      <h2>Внешние агенты-партнёры</h2>
     </div>
     <div class="aud reveal">
       <div class="ico">🧑‍💼</div>
@@ -391,7 +395,7 @@
     </div>
     <div class="mods">
       <div class="mod reveal"><div class="mn">МОДУЛЬ 1</div><h4>Старт: ИИ за 5 минут в день</h4><p>Снять страх, дать базовые промпты, первый «вау» — сразу на примере ЖК ССК.</p></div>
-      <div class="mod reveal"><div class="mn">МОДУЛЬ 2</div><h4>Контент, который продаёт</h4><p>Описания объектов, посты, reels и личный бренд риелтора — всё на ЖК ССК.</p></div>
+      <div class="mod reveal"><div class="mn">МОДУЛЬ 2</div><h4>Контент, который продаёт</h4><p>Описания объектов, посты, reels и личный бренд агента — всё на ЖК ССК.</p></div>
       <div class="mod reveal"><div class="mn">МОДУЛЬ 3</div><h4>Клиент и сделка</h4><p>Подбор квартиры под запрос, отработка возражений, скрипты, ипотека простым языком.</p></div>
       <div class="mod reveal"><div class="mn">МОДУЛЬ 4</div><h4>Визуал объекта</h4><p>Рендеры интерьера, «меблировка» пустых квартир, эффектная подача планировок ССК.</p></div>
       <div class="mod last reveal" style="grid-column:1/-1">
@@ -474,16 +478,20 @@
             <img class="km" src="assets/kubik.png" alt="Кубик" />
             <div class="hi">Привет! Я Кубик 🧱 За 5 минут в день научу продавать с ИИ — на квартирах ССК.</div>
             <h3>Прокачай продажи с ИИ</h3>
-            <div class="sub">5 минут в день · бесплатно для партнёров ССК</div>
+            <div class="sub">5 минут в день · бесплатно для агентов-партнёров ССК</div>
             <div class="stat-row">
               <div class="s"><b>5</b><span>модулей</span></div>
               <div class="s"><b>0/5</b><span>пройдено</span></div>
               <div class="s"><b>🏅</b><span>сертификат</span></div>
             </div>
+            <button class="start-btn" onclick="this.textContent='Поехали! Открываю Модуль 1 🚀'">Старт 🚀</button>
+            <div class="scroll-hint">↓ листай — вот что внутри</div>
+            <div class="chip-label">Программа · 5 модулей</div>
             <div class="mod-chip"><div class="n">1</div><span>Старт: ИИ за 5 минут</span><span class="lk">▶️</span></div>
             <div class="mod-chip lock"><div class="n">2</div><span>Контент, который продаёт</span><span class="lk">🔒</span></div>
             <div class="mod-chip lock"><div class="n">3</div><span>Клиент и сделка</span><span class="lk">🔒</span></div>
-            <button class="start-btn" onclick="this.textContent='Поехали! Открываю Модуль 1 🚀'">Старт 🚀</button>
+            <div class="mod-chip lock"><div class="n">4</div><span>Визуал объекта</span><span class="lk">🔒</span></div>
+            <div class="mod-chip lock"><div class="n">5</div><span>Я — ИИ-партнёр ССК</span><span class="lk">🔒</span></div>
           </div>
         </div>
       </div>
