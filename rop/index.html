@@ -160,6 +160,7 @@ var LINK_PATTERN='https://ai4g.ru/pattern-test';
 var LINK_RESOURCE='https://hr-ocenka.ru/';
 var EX_PATTERN='reports/pattern-report.pdf';
 var EX_RESOURCE='reports/resource-k-report.pdf';
+var ENDPOINT='https://script.google.com/macros/s/AKfycbx-okppfIxc8tMVXQ0TsbV-BysWY6BpglrGHLrDF8Pb4KYJqpTu68YHAlcOApvXa03j/exec';
 
 var EFFECTS = {
   fast:{i:'⚡',t:'Быстрый вау'}, cascade:{i:'⬇️',t:'Каскад менеджерам'},
@@ -207,7 +208,7 @@ var WHO = {
   out:{t:'Внешние эксперты',s:'Коуч и AI-эксперт с рынка',k:1.4}
 };
 
-var S = {step:0, correction:'', branch:null, acts:[], comment:'', who:null};
+var S = {step:0, correction:'', branch:null, acts:[], comment:'', who:null, sent:false, doSend:false};
 
 function actMeta(id){ var arr=ACT[S.branch]||[]; for(var i=0;i<arr.length;i++) if(arr[i].id===id) return arr[i]; return null; }
 function effectsSet(){
@@ -235,7 +236,7 @@ function updateTrack(){
   Object.keys(EFFECTS).forEach(function(k){ document.getElementById('chip-'+k).className='chip'+(on.indexOf(k)>=0?' on':''); });
 }
 function go(step){ S.step=step; render(); }
-function reset(){ S={step:0,correction:'',branch:null,acts:[],comment:'',who:null}; location.hash=''; render(); }
+function reset(){ S={step:0,correction:'',branch:null,acts:[],comment:'',who:null,sent:false,doSend:false}; location.hash=''; render(); }
 
 function render(){
   updateTrack();
@@ -250,8 +251,8 @@ function render(){
 
 function scrWelcome(){
   stage.innerHTML='<div class="kicker">Конструктор предложения</div>'+
-   '<h1>Соберём формат обучения<br>для ваших РОПов вместе</h1>'+
-   '<p class="lead">Здравствуйте, Светлана! За пару минут вы выбираете ответы — Кубик-РОП идёт по золотой дорожке, а в конце из ваших ответов складывается готовое предложение. Ничего не решаем за вас: только показываем варианты.</p>'+
+   '<h1>Соберём формат обучения<br>для РОПов ССК вместе</h1>'+
+   '<p class="lead">Здравствуйте, Светлана! За пару минут вы выбираете ответы — Кубик-РОП идёт по золотой дорожке, а в конце из ответов складывается готовое предложение. Ничего не решаем заранее: только показываем варианты.</p>'+
    '<p class="hint">Академия новая — это черновик-замысел. Итог сразу отправите методологу, вместе финализируем.</p>'+
    '<div class="btn-row"><button class="btn primary" onclick="go(1)">Поехали →</button></div>';
 }
@@ -323,7 +324,7 @@ function scrWho(){
 function opt(key,em){ var d=WHO[key];
   return '<button class="opt" onclick="chooseWho(\''+key+'\')"><span class="em">'+em+'</span><span><span class="ot">'+d.t+'</span><br><span class="os">'+d.s+'</span></span></button>';
 }
-function chooseWho(key){ S.who=key; go(5); }
+function chooseWho(key){ S.who=key; S.doSend=true; S.sent=false; go(5); }
 
 function scrResult(){
   var b=BRANCH[S.branch]; var w=WHO[S.who||'mix'];
@@ -344,11 +345,22 @@ function scrResult(){
    '</div>'+
    (S.comment?'<div class="rc" style="margin-top:16px"><h4>Ваш вариант / комментарий</h4><div style="font-size:14.5px;color:#4b4d55">'+escapeHtml(S.comment)+'</div></div>':'')+
    '<div class="disclaimer">📝&nbsp;<div>Это <b>черновик-замысел</b>, собранный из ваших ответов. Академия новая — программу, реальный бюджет и наполнение соберём вместе после сверки с вами.'+(S.correction?'<br><br><b>Уточнение по запросу:</b> '+escapeHtml(S.correction):'')+'</div></div>'+
+   '<div id="sendstatus" style="margin-top:16px;font-weight:700;font-size:14px;color:#5f8d18"></div>'+
    '<div class="btn-row">'+
      '<button class="btn gold" onclick="copyResult()">📋 Скопировать итог для методолога</button>'+
      '<button class="btn ghost" onclick="copyLink()">🔗 Скопировать ссылку с ответами</button>'+
      '<button class="btn ghost" onclick="reset()">↻ Пройти заново</button>'+
    '</div><div class="copybox" id="copybox"></div>';
+  if(S.doSend && !S.sent && ENDPOINT) sendResult();
+}
+function sendResult(){
+  S.sent=true;
+  var b=BRANCH[S.branch], w=WHO[S.who||'mix'];
+  var payload={branch:b.name,scope:b.scope,acts:(S.acts||[]).map(function(id){var m=actMeta(id);return m?m.l:id;}),comment:S.comment,who:w.t,budget:budgetTier(),correction:S.correction,link:shareUrl()};
+  var st=document.getElementById('sendstatus'); if(st) st.textContent='Отправляю методологу…';
+  fetch(ENDPOINT,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(function(){ var s=document.getElementById('sendstatus'); if(s) s.textContent='✓ Отправлено методологу — ответ сохранён'; })
+    .catch(function(){ var s=document.getElementById('sendstatus'); if(s){ s.style.color='#b5730a'; s.textContent='⚠ Не удалось отправить автоматически — воспользуйтесь кнопкой «Скопировать итог».'; } });
 }
 
 function summaryText(){
