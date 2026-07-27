@@ -208,7 +208,7 @@ var WHO = {
   out:{t:'Внешние эксперты',s:'Коуч и AI-эксперт с рынка',k:1.4}
 };
 
-var S = {step:0, correction:'', branch:null, acts:[], comment:'', who:null, sent:false, doSend:false};
+var S = {step:0, role:'', correction:'', branch:null, acts:[], comment:'', who:null, sent:false, doSend:false};
 
 function actMeta(id){ var arr=ACT[S.branch]||[]; for(var i=0;i<arr.length;i++) if(arr[i].id===id) return arr[i]; return null; }
 function effectsSet(){
@@ -236,7 +236,7 @@ function updateTrack(){
   Object.keys(EFFECTS).forEach(function(k){ document.getElementById('chip-'+k).className='chip'+(on.indexOf(k)>=0?' on':''); });
 }
 function go(step){ S.step=step; render(); }
-function reset(){ S={step:0,correction:'',branch:null,acts:[],comment:'',who:null,sent:false,doSend:false}; location.hash=''; render(); }
+function reset(){ S={step:0,role:'',correction:'',branch:null,acts:[],comment:'',who:null,sent:false,doSend:false}; location.hash=''; render(); }
 
 function render(){
   updateTrack();
@@ -253,9 +253,15 @@ function scrWelcome(){
   stage.innerHTML='<div class="kicker">Конструктор предложения</div>'+
    '<h1>Соберём формат обучения<br>для РОПов ССК вместе</h1>'+
    '<p class="lead">Здравствуйте, Светлана! За пару минут вы выбираете ответы — Кубик-РОП идёт по золотой дорожке, а в конце из ответов складывается готовое предложение. Ничего не решаем заранее: только показываем варианты.</p>'+
-   '<p class="hint">Академия новая — это черновик-замысел. Итог сразу отправите методологу, вместе финализируем.</p>'+
-   '<div class="btn-row"><button class="btn primary" onclick="go(1)">Поехали →</button></div>';
+   '<p class="hint">Академия новая — это черновик-замысел. Итог сразу отправится методологу, вместе финализируем.</p>'+
+   '<div class="own-label" style="margin-top:22px">Прежде чем начать — кто заполняет?</div>'+
+   '<div class="opts" style="margin-top:12px">'+
+     '<button class="opt" onclick="setRole(\'Руководитель\')"><span class="em">🧭</span><span><span class="ot">Руководитель</span><br><span class="os">задаёте направление</span></span></button>'+
+     '<button class="opt" onclick="setRole(\'РОП\')"><span class="em">🧱</span><span><span class="ot">РОП</span><br><span class="os">руководитель отдела продаж</span></span></button>'+
+     '<button class="opt" onclick="setRole(\'Другой участник\')"><span class="em">👤</span><span><span class="ot">Другой участник</span><br><span class="os">коллега, причастный к решению</span></span></button>'+
+   '</div>';
 }
+function setRole(r){ S.role=r; go(1); }
 function scrRequest(){
   stage.innerHTML='<div class="kicker">Шаг 1 · Сверка запроса</div>'+
    '<h2>Вот как мы услышали ваш запрос</h2>'+
@@ -337,7 +343,7 @@ function scrResult(){
   var on=effectsSet();
   var fxHtml=on.map(function(k){return '<span class="st">'+EFFECTS[k].i+' '+EFFECTS[k].t+'</span>';}).join('');
   stage.innerHTML='<div class="kicker">Готово · ваше предложение</div>'+
-   '<div class="res-head"><div class="res-badge">'+b.icon+'</div><div><div class="res-name">'+b.name+'</div><div class="res-tag">'+b.tag+' · '+b.scope+'</div></div></div>'+
+   '<div class="res-head"><div class="res-badge">'+b.icon+'</div><div><div class="res-name">'+b.name+'</div><div class="res-tag">'+b.tag+' · '+b.scope+(S.role?' • заполнил(а): '+S.role:'')+'</div></div></div>'+
    '<div class="res-grid">'+
      '<div class="rc" style="grid-column:1/-1"><h4>Что включим</h4><ul>'+inside+'</ul></div>'+
      '<div class="rc"><h4>Бюджет · масштаб</h4><div class="budget">'+budgetTier()+'<small>ориентир масштаба · исполнители: '+w.t+' · точную вилку уточним</small></div></div>'+
@@ -356,7 +362,7 @@ function scrResult(){
 function sendResult(){
   S.sent=true;
   var b=BRANCH[S.branch], w=WHO[S.who||'mix'];
-  var payload={branch:b.name,scope:b.scope,acts:(S.acts||[]).map(function(id){var m=actMeta(id);return m?m.l:id;}),comment:S.comment,who:w.t,budget:budgetTier(),correction:S.correction,link:shareUrl()};
+  var payload={role:S.role||'',branch:b.name,scope:b.scope,acts:(S.acts||[]).map(function(id){var m=actMeta(id);return m?m.l:id;}),comment:S.comment,who:w.t,budget:budgetTier(),correction:S.correction,link:shareUrl()};
   var st=document.getElementById('sendstatus'); if(st) st.textContent='Отправляю методологу…';
   fetch(ENDPOINT,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
     .then(function(){ var s=document.getElementById('sendstatus'); if(s) s.textContent='✓ Отправлено методологу — ответ сохранён'; })
@@ -366,6 +372,7 @@ function sendResult(){
 function summaryText(){
   var b=BRANCH[S.branch]; var w=WHO[S.who||'mix'];
   var t='ПРЕДЛОЖЕНИЕ ДЛЯ РОПов — черновик из квеста\n';
+  if(S.role) t+='Роль заполнившего: '+S.role+'\n';
   t+='Ветка: '+b.name+' ('+b.scope+')\n';
   var names=(S.acts||[]).map(function(id){var m=actMeta(id);return m?m.l:id;});
   t+='Активности: '+(names.length?names.join('; '):'—')+'\n';
@@ -377,7 +384,7 @@ function summaryText(){
   return t;
 }
 function shareUrl(){
-  var data={b:S.branch,a:S.acts,m:S.comment,w:S.who,c:S.correction};
+  var data={r:S.role,b:S.branch,a:S.acts,m:S.comment,w:S.who,c:S.correction};
   return location.origin+location.pathname+'#'+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(data)))));
 }
 function copyResult(){ var box=document.getElementById('copybox'); box.style.display='block'; box.textContent=summaryText(); copy(summaryText(),'Итог скопирован — вставьте методологу'); }
@@ -390,7 +397,7 @@ function escapeHtml(s){ return s.replace(/[&<>]/g,function(c){return {'&':'&amp;
 function initFromHash(){
   if(location.hash.length>1){ try{
     var d=JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(location.hash.slice(1))))));
-    if(d.b){ S.branch=d.b; S.acts=d.a||[]; S.comment=d.m||''; S.who=d.w||null; S.correction=d.c||''; S.step=5; return true; }
+    if(d.b){ S.role=d.r||''; S.branch=d.b; S.acts=d.a||[]; S.comment=d.m||''; S.who=d.w||null; S.correction=d.c||''; S.step=5; return true; }
   }catch(e){} }
   return false;
 }
